@@ -77,33 +77,53 @@ public class GeojsonParser{
         // Obtenir l'objet le tableau de coordonées dans la liste
         JSONArray coordArray = (JSONArray) geometry.get("coordinates");
 
+        ArrayList<Coordinate> Polygon = new ArrayList<>();
+        ArrayList<ArrayList<Coordinate>> MultiPolygon = new ArrayList<>();
 
         //si Polygon ([] tab 1 dimension )
         if(geoType.equals("Polygon")){
-            //coordArray.forEach(pol->parsePolygon((JSONArray)pol,1));
+            coordArray.forEach(pol->parsePolygon((JSONArray)pol,1, Polygon, MultiPolygon ,1));
         }else{//si MultiPolygon([[]] tab 2 dimensions )
-            coordArray.forEach(pol->parsePolygon((JSONArray)pol,2));
+            //coordArray.forEach(pol->parsePolygon((JSONArray)pol,2,0));
         }
 
-        //System.out.println(properties);
-        //System.out.println(geoType);
+
+        System.out.println("("+ ISO_A3 +") "+ ADMIN );
+        System.out.println("- " + Polygon.size() + " coordinate");
+
 
     }
 
     /**
      * Permet de naviguer jusqu'au coordonées
-     * @param pol   tableaux
-     * @param depth profondeur des tableaux
+     * @param pol
+     * @param depth
+     * @param Polygon
+     * @param type 0 = Polygon, 1 = MultiPolygon
      */
-    private static void parsePolygon(JSONArray pol,int depth) {
+    private static void parsePolygon(JSONArray pol,int depth,ArrayList<Coordinate> Polygon,ArrayList<ArrayList<Coordinate>> MultiPolygon, int type) {
         if(depth > 0) {
-            pol.forEach(polparse -> parsePolygon((JSONArray) polparse, depth - 1));
+            pol.forEach(polparse -> parsePolygon((JSONArray) polparse, depth - 1,Polygon, MultiPolygon, type));
         }else{
-            //
-            System.out.println(pol.get(0));
-            System.out.println(pol.get(1));
+            Polygon.add(
+                    new Coordinate(Double.toString((Double)pol.get(0)), Double.toString((Double)pol.get(1)))
+            );
         }
+    }
+}
 
+class Coordinate {
+    private String x;
+    private String y;
 
+    public Coordinate(String x, String y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+
+    public String toString()
+    {
+        return x + "," + y + " ";
     }
 }
