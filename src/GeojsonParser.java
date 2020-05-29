@@ -84,7 +84,7 @@ public class GeojsonParser{
         if(geoType.equals("Polygon")){
             coordArray.forEach(pol->parsePolygon((JSONArray)pol,1, Polygon));
         }else{//si MultiPolygon([[]] tab 2 dimensions )
-            //coordArray.forEach(pol->parsePolygon((JSONArray)pol,2,0));
+            coordArray.forEach(pol->parseMultiplePolygon((JSONArray)pol,2, Polygon, MultiPolygon));
         }
 
 
@@ -110,7 +110,29 @@ public class GeojsonParser{
             );
         }
     }
+    /**
+     * Permet de naviguer jusqu'au coordonées
+     * @param pol
+     * @param depth
+     * @param Polygon
+     * @param type 0 = Polygon, 1 = MultiPolygon
+     */
+    private static void parseMultiplePolygon(JSONArray pol,int depth,ArrayList<Coordinate> Polygon,ArrayList<ArrayList<Coordinate>> MultiPolygon) {
+        if(depth > 0) {
+            pol.forEach(polparse -> parseMultiplePolygon((JSONArray) polparse, depth - 1,Polygon, MultiPolygon));
+        }else{
+            Polygon.add(
+                    new Coordinate(Double.toString((Double)pol.get(0)), Double.toString((Double)pol.get(1)))
+            );
+        }
+        if(depth == 1){
+            MultiPolygon.add(Polygon);
+            System.out.println("in");
+            Polygon.clear();
+        }
+    }
 }
+
 
 class Coordinate {
     private String x;
