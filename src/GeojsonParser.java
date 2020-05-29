@@ -82,7 +82,7 @@ public class GeojsonParser{
 
         //si Polygon ([] tab 1 dimension )
         if(geoType.equals("Polygon")){
-            coordArray.forEach(pol->parsePolygon((JSONArray)pol,1, Polygon, MultiPolygon ,1));
+            coordArray.forEach(pol->parsePolygon((JSONArray)pol,1, Polygon));
         }else{//si MultiPolygon([[]] tab 2 dimensions )
             //coordArray.forEach(pol->parsePolygon((JSONArray)pol,2,0));
         }
@@ -90,7 +90,7 @@ public class GeojsonParser{
 
         System.out.println("("+ ISO_A3 +") "+ ADMIN );
         System.out.println("- " + Polygon.size() + " coordinate");
-
+        //System.out.println("- " + MultiPolygon.size() + " coordinate");
 
     }
 
@@ -101,9 +101,9 @@ public class GeojsonParser{
      * @param Polygon
      * @param type 0 = Polygon, 1 = MultiPolygon
      */
-    private static void parsePolygon(JSONArray pol,int depth,ArrayList<Coordinate> Polygon,ArrayList<ArrayList<Coordinate>> MultiPolygon, int type) {
+    private static void parsePolygon(JSONArray pol,int depth,ArrayList<Coordinate> Polygon) {
         if(depth > 0) {
-            pol.forEach(polparse -> parsePolygon((JSONArray) polparse, depth - 1,Polygon, MultiPolygon, type));
+            pol.forEach(polparse -> parsePolygon((JSONArray) polparse, depth - 1,Polygon));
         }else{
             Polygon.add(
                     new Coordinate(Double.toString((Double)pol.get(0)), Double.toString((Double)pol.get(1)))
